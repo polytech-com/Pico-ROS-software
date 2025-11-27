@@ -15,6 +15,8 @@
 #define PICO_ROS_H_
 
 #include "zenoh-pico.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
  extern "C" {
@@ -28,9 +30,6 @@
 /** @} */
 
 /* Exported includes ---------------------------------------------------------*/
-
-#include <stdint.h>
-#include <stdbool.h>
 
 /* Exported constants --------------------------------------------------------*/
 /** @brief Maximum size for key expressions used in rmw topic names @ingroup picoros */
@@ -338,7 +337,7 @@ picoros_res_t picoros_service_call(picoros_srv_client_t* client, uint8_t* payloa
 bool picoros_service_call_in_progress(picoros_srv_client_t* client);
 
 #ifdef __cplusplus
-}
+ }
 #endif
 
 #endif /* PICO_ROS_H_ */

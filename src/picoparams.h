@@ -11,6 +11,10 @@
 #ifndef PICOPARAMS_H_
 #define PICOPARAMS_H_
 
+/* Exported includes ---------------------------------------------------------*/
+#include "picoros.h"
+#include "picoserdes.h"
+
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -21,10 +25,6 @@
  * @{
  */
 /** @} */
-
-/* Exported includes ---------------------------------------------------------*/
-#include "picoros.h"
-#include "picoserdes.h"
 
 /* Exported types ------------------------------------------------------------*/
 /** @brief Maximum number of strings in a single parameter request
@@ -216,7 +216,7 @@ picoros_res_t picoparams_init(picoros_node_t* node, picoparams_interface_t ifx);
 /* Exported functions --------------------------------------------------------*/
 
 #ifdef __cplusplus
-}
+ }
 #endif
 
 #endif /* PICOPARAMS_H_ */
