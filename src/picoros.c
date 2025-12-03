@@ -173,8 +173,9 @@ static void queriable_data_handler(z_loaned_query_t *query, void *arg) {
         z_bytes_copy_from_buf(&reply_payload, reply.data, reply.length);
 
         // rmw attachment
+        z_clock_t now = z_clock_now();
         srv->attachment.sequence_number = 1;
-        srv->attachment.time = z_clock_now().tv_nsec;
+        srv->attachment.time = (int64_t)(now.tv_sec * NSEC_PER_SEC) + (int64_t)now.tv_nsec;
         z_query_reply_options_t options;
         z_query_reply_options_default(&options);
         z_owned_bytes_t tx_attachment;
@@ -338,8 +339,9 @@ picoros_res_t picoros_publish(picoros_publisher_t* pub, uint8_t* payload, size_t
     z_publisher_put_options_t options;
     z_publisher_put_options_default(&options);
 
+    z_clock_t now = z_clock_now();
     pub->attachment.sequence_number++;
-    pub->attachment.time = z_clock_now().tv_nsec;
+    pub->attachment.time = (int64_t)(now.tv_sec * NSEC_PER_SEC) + (int64_t)now.tv_nsec;
 
     z_owned_bytes_t z_attachment;
     z_bytes_from_static_buf(&z_attachment, (uint8_t*)&pub->attachment, sizeof(rmw_attachment_t));
@@ -475,10 +477,11 @@ picoros_res_t picoros_service_call(picoros_srv_client_t * client, uint8_t* paylo
     opts->payload = z_bytes_move(&zbytes);
 
     // RMW attachment
+    z_clock_t now = z_clock_now();
     rmw_attachment_t attachment = {
         .rmw_gid_size = RMW_GID_SIZE,
         .sequence_number = 1,
-        .time = z_clock_now().tv_nsec,
+        .time = (int64_t)(now.tv_sec * NSEC_PER_SEC) + (int64_t)now.tv_nsec,
     };
     z_owned_bytes_t tx_attachment;
     z_bytes_copy_from_buf(&tx_attachment, (uint8_t*)&attachment, sizeof(rmw_attachment_t));
