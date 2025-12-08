@@ -175,7 +175,7 @@ static void queriable_data_handler(z_loaned_query_t *query, void *arg) {
         // rmw attachment
         z_clock_t now = z_clock_now();
         srv->attachment.sequence_number = 1;
-        srv->attachment.time = (int64_t)(now.tv_sec * NSEC_PER_SEC) + (int64_t)now.tv_nsec;
+        srv->attachment.time = (int64_t)now.tv_sec * NSEC_PER_SEC + (int64_t)now.tv_nsec;
         z_query_reply_options_t options;
         z_query_reply_options_default(&options);
         z_owned_bytes_t tx_attachment;
