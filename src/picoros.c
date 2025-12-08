@@ -341,7 +341,7 @@ picoros_res_t picoros_publish(picoros_publisher_t* pub, uint8_t* payload, size_t
 
     z_clock_t now = z_clock_now();
     pub->attachment.sequence_number++;
-    pub->attachment.time = (int64_t)(now.tv_sec * NSEC_PER_SEC) + (int64_t)now.tv_nsec;
+    pub->attachment.time = (int64_t)now.tv_sec * NSEC_PER_SEC + (int64_t)now.tv_nsec;
 
     z_owned_bytes_t z_attachment;
     z_bytes_from_static_buf(&z_attachment, (uint8_t*)&pub->attachment, sizeof(rmw_attachment_t));
