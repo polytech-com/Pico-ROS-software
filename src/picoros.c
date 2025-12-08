@@ -481,7 +481,7 @@ picoros_res_t picoros_service_call(picoros_srv_client_t * client, uint8_t* paylo
     rmw_attachment_t attachment = {
         .rmw_gid_size = RMW_GID_SIZE,
         .sequence_number = 1,
-        .time = (int64_t)(now.tv_sec * NSEC_PER_SEC) + (int64_t)now.tv_nsec,
+        .time = ((int64_t)now.tv_sec * NSEC_PER_SEC) + (int64_t)now.tv_nsec,
     };
     z_owned_bytes_t tx_attachment;
     z_bytes_copy_from_buf(&tx_attachment, (uint8_t*)&attachment, sizeof(rmw_attachment_t));
