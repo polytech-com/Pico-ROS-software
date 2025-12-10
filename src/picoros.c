@@ -257,6 +257,12 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_LISTEN_KEY, ifx->locator);
         }
     }
+    
+    uint8_t enablemTls = 1;
+    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &enablemTls);   // Enable mTLS within Zenoh
+    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_CERTIFICATE_BASE64_KEY, ifx->cert_certificate);
+    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_BASE64_KEY, ifx->key_certificate);
+    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_BASE64_KEY, ifx->ca_certificate);
 
     _PR_LOG("Opening Zenoh session...\r\n");
     if ((res = z_open(&s_wrapper, z_config_move(&config), NULL)) != Z_OK) {
