@@ -248,6 +248,7 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
     z_config_default(&config);
 
     _PR_LOG("Configuring Zenoh session...\r\n");
+    _PR_LOG("Locator: %s\r\n", ifx->locator);
     zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_MODE_KEY, ifx->mode);
     if (ifx->locator) {
         if (strcmp(ifx->mode, "client") == 0) {
@@ -257,13 +258,32 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_LISTEN_KEY, ifx->locator);
         }
     }
-    
-    uint8_t enablemTls = 1;
-    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &enablemTls);   // Enable mTLS within Zenoh
-    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_CERTIFICATE_BASE64_KEY, ifx->cert_certificate);
-    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_BASE64_KEY, ifx->key_certificate);
-    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_BASE64_KEY, ifx->ca_certificate);
 
+    if(ifx->key_certificate != NULL && ifx->cert_certificate != NULL && ifx->ca_certificate != NULL)
+    {
+        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_KEY, ifx->key_certificate);
+        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_CERTIFICATE_KEY, ifx->cert_certificate);
+        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_KEY, ifx->ca_certificate);
+        if(ifx->enablemTls)
+        {
+            _PR_LOG("mTLS enabled\n");
+            uint8_t _enTls = (ifx->enablemTls ? 1 : 0);
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &_enTls);   // Enable mTLS within Zenoh
+        }
+        if(ifx->verifyNameOnConnect) {
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_VERIFY_NAME_ON_CONNECT_KEY, ifx->verifyNameOnConnect ? "true" : "false");
+        }
+        if(ifx->enableListen)
+        {
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_PRIVATE_KEY_KEY, ifx->key_certificate);
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_CERTIFICATE_KEY, ifx->cert_certificate);
+        }
+    } else if(ifx->key_certificate == NULL || ifx->cert_certificate == NULL || ifx->ca_certificate == NULL)
+    {
+        _PR_LOG("TLS not enabled, missing certificates\n");
+        return PICOROS_ERROR;
+    }
+    
     _PR_LOG("Opening Zenoh session...\r\n");
     if ((res = z_open(&s_wrapper, z_config_move(&config), NULL)) != Z_OK) {
         _PR_LOG("Unable to open Zenoh session! Error:%d\n", res);

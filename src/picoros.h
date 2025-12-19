@@ -226,6 +226,10 @@ typedef struct {
 typedef struct {
     char* mode;                     /**< Connection mode (peer/client) */
     char* locator;                  /**< Network locator string */
+    
+    bool enablemTls;
+    bool verifyNameOnConnect;
+    bool enableListen;
     const uint8_t* ca_certificate;
     const uint8_t* cert_certificate;
     const uint8_t* key_certificate;
