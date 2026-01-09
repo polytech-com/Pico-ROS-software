@@ -226,6 +226,7 @@ typedef struct {
 typedef struct {
     char* mode;                     /**< Connection mode (peer/client) */
     char* locator;                  /**< Network locator string */
+    char* host_name;                /**< Hostname for TLS verification */
     
     bool enablemTls;
     bool verifyNameOnConnect;

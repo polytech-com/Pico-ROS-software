@@ -283,6 +283,12 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
         _PR_LOG("TLS not enabled, missing certificates\n");
         return PICOROS_ERROR;
     }
+
+    // Set the expected hostname for TLS verification. This should match the server's certificate.
+    if(ifx->host_name != NULL)
+    {
+        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_HOSTNAME_KEY, ifx->host_name);
+    }
     
     _PR_LOG("Opening Zenoh session...\r\n");
     if ((res = z_open(&s_wrapper, z_config_move(&config), NULL)) != Z_OK) {
