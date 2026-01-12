@@ -230,7 +230,6 @@ typedef struct {
     
     bool enable_mTls;               /**< Enable mutual TLS (mTLS) for this interface */
     bool verify_name_on_connect;    /**< Verify the peer's hostname against its TLS certificate when connecting */
-    bool enable_listen;             /**< Enable listening for and accepting incoming connections */
     const uint8_t* ca_certificate;  /**< Pointer to CA certificate buffer used to validate the peer's certificate */
     const uint8_t* cert_certificate;/**< Pointer to local certificate buffer presented during mTLS handshake */
     const uint8_t* key_certificate; /**< Pointer to private key buffer */
