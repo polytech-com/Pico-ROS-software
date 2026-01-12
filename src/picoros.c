@@ -271,11 +271,11 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &_enTls);   // Enable mTLS within Zenoh
         }
         
-        if (ifx->verifyNameOnConnect) {
+        if (ifx->verify_name_on_connect) {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_VERIFY_NAME_ON_CONNECT_KEY, "true");
         }
         
-        if (ifx->enableListen)
+        if (ifx->enable_listen)
         {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_PRIVATE_KEY_KEY, ifx->key_certificate);
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_CERTIFICATE_KEY, ifx->cert_certificate);
@@ -296,8 +296,7 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
         return PICOROS_ERROR;
     }
 
-    
-    
+
     _PR_LOG("Opening Zenoh session...\r\n");
     if ((res = z_open(&s_wrapper, z_config_move(&config), NULL)) != Z_OK) {
         _PR_LOG("Unable to open Zenoh session! Error:%d\n", res);
