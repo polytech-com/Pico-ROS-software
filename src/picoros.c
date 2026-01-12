@@ -202,7 +202,7 @@ static void queriable_drop_handler(void* arg) { _PR_LOG("Drop srv callback\n"); 
 static void get_drop_handler(void* ctx){
     picoros_srv_client_t* client = (picoros_srv_client_t*)ctx;
     client->_in_progress = false;
-    if(client->drop_callback != NULL){
+    if (client->drop_callback != NULL){
         client->drop_callback(client);
     }
 }
@@ -259,36 +259,44 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
         }
     }
 
-    if(ifx->key_certificate != NULL && ifx->cert_certificate != NULL && ifx->ca_certificate != NULL)
+    if (ifx->key_certificate != NULL && ifx->cert_certificate != NULL && ifx->ca_certificate != NULL)
     {
         zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_KEY, ifx->key_certificate);
         zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_CERTIFICATE_KEY, ifx->cert_certificate);
         zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_KEY, ifx->ca_certificate);
-        if(ifx->enablemTls)
+        if (ifx->enablemTls)
         {
             _PR_LOG("mTLS enabled\n");
-            uint8_t _enTls = (ifx->enablemTls ? 1 : 0);
+            uint8_t _enTls = 1;
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &_enTls);   // Enable mTLS within Zenoh
         }
-        if(ifx->verifyNameOnConnect) {
-            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_VERIFY_NAME_ON_CONNECT_KEY, ifx->verifyNameOnConnect ? "true" : "false");
+        
+        if (ifx->verifyNameOnConnect) {
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_VERIFY_NAME_ON_CONNECT_KEY, "true");
         }
-        if(ifx->enableListen)
+        
+        if (ifx->enableListen)
         {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_PRIVATE_KEY_KEY, ifx->key_certificate);
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_CERTIFICATE_KEY, ifx->cert_certificate);
         }
-    } else if(ifx->key_certificate == NULL || ifx->cert_certificate == NULL || ifx->ca_certificate == NULL)
+        
+        // Set the expected hostname for TLS verification. This should match the server's certificate.
+        if (ifx->host_name != NULL)
+        {
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_HOSTNAME_KEY, ifx->host_name);
+        } else 
+        {
+            _PR_LOG("ERROR: No hostname provided for TLS verification.\n");
+            return PICOROS_ERROR;
+        }
+    } else
     {
         _PR_LOG("TLS not enabled, missing certificates\n");
         return PICOROS_ERROR;
     }
 
-    // Set the expected hostname for TLS verification. This should match the server's certificate.
-    if(ifx->host_name != NULL)
-    {
-        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_HOSTNAME_KEY, ifx->host_name);
-    }
+    
     
     _PR_LOG("Opening Zenoh session...\r\n");
     if ((res = z_open(&s_wrapper, z_config_move(&config), NULL)) != Z_OK) {
@@ -298,7 +306,7 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
     _PR_LOG("Zenoh setup finished!\r\n");
 
     // Start read and lease tasks for zenoh-pico
-    if((res = zp_start_read_task(z_session_loan_mut(&s_wrapper), NULL)) != Z_OK
+    if ((res = zp_start_read_task(z_session_loan_mut(&s_wrapper), NULL)) != Z_OK
     || (res = zp_start_lease_task(z_session_loan_mut(&s_wrapper), NULL)) != Z_OK
     ){
         z_session_drop(z_session_move(&s_wrapper));
