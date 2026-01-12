@@ -228,12 +228,12 @@ typedef struct {
     char* locator;                  /**< Network locator string */
     char* host_name;                /**< Hostname for TLS verification */
     
-    bool enable_mTls;
-    bool verify_name_on_connect;
-    bool enable_listen;
-    const uint8_t* ca_certificate;
-    const uint8_t* cert_certificate;
-    const uint8_t* key_certificate;
+    bool enable_mTls;               /**< Enable mutual TLS (mTLS) for this interface */
+    bool verify_name_on_connect;    /**< Verify the peer's hostname against its TLS certificate when connecting */
+    bool enable_listen;             /**< Enable listening for and accepting incoming connections */
+    const uint8_t* ca_certificate;  /**< Pointer to CA certificate buffer used to validate the peer's certificate */
+    const uint8_t* cert_certificate;/**< Pointer to local certificate buffer presented during mTLS handshake */
+    const uint8_t* key_certificate; /**< Pointer to private key buffer */
 } picoros_interface_t;
 
 /** @} */
