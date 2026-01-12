@@ -264,7 +264,7 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
         zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_KEY, ifx->key_certificate);
         zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_CERTIFICATE_KEY, ifx->cert_certificate);
         zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_KEY, ifx->ca_certificate);
-        if (ifx->enablemTls)
+        if (ifx->enable_mTls)
         {
             _PR_LOG("mTLS enabled\n");
             uint8_t _enTls = 1;

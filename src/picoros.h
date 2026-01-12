@@ -228,9 +228,9 @@ typedef struct {
     char* locator;                  /**< Network locator string */
     char* host_name;                /**< Hostname for TLS verification */
     
-    bool enablemTls;
-    bool verifyNameOnConnect;
-    bool enableListen;
+    bool enable_mTls;
+    bool verify_name_on_connect;
+    bool enable_listen;
     const uint8_t* ca_certificate;
     const uint8_t* cert_certificate;
     const uint8_t* key_certificate;
