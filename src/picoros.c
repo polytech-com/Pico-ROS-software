@@ -275,7 +275,7 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_KEY, ifx->ca_certificate);
             if (ifx->enable_mTls)
             {
-                _PR_LOG("mTLS enabled\n");
+                _PR_LOG("mTLS enabled\r\n");
                 uint8_t _enTls = 1;
                 zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &_enTls);   // Enable mTLS within Zenoh
                 if (ifx->cert_certificate == NULL)
@@ -305,7 +305,7 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
             } 
             
             // Set the expected hostname for TLS verification. This should match the server's certificate.
-            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_HOSTNAME_KEY, ifx->host_name);    
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_HOSTNAME_KEY, ifx->host_name);
         }
     }
 
