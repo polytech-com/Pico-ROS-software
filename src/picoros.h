@@ -232,7 +232,7 @@ typedef struct {
     bool verify_name_on_connect;    /**< Verify the peer's hostname against its TLS certificate when connecting */
     const uint8_t* ca_certificate;  /**< Pointer to CA certificate buffer used to validate the peer's certificate */
     const uint8_t* cert_certificate;/**< Pointer to local certificate buffer presented during mTLS handshake */
-    const uint8_t* key_certificate; /**< Pointer to private key buffer */
+    const uint8_t* private_key;     /**< Pointer to private key buffer */
 } picoros_interface_t;
 
 /** @} */

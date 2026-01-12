@@ -265,13 +265,13 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
         if (strstr(con_type, "tls") != NULL)
         {
             _PR_LOG("TLS enabled in locator\r\n");
-            if (ifx->key_certificate == NULL || ifx->ca_certificate == NULL || ifx->host_name == NULL)
+            if (ifx->private_key == NULL || ifx->ca_certificate == NULL || ifx->host_name == NULL)
             {
                 _PR_LOG("ERROR: TLS enabled but missing certificates or hostname!\r\n");
                 return PICOROS_ERROR;
             }
 
-            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_KEY, ifx->key_certificate);
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_KEY, ifx->private_key);
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_KEY, ifx->ca_certificate);
             if (ifx->enable_mTls)
             {
@@ -295,7 +295,7 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
             {
                 if (ifx->cert_certificate != NULL)
                 {
-                    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_PRIVATE_KEY_KEY, ifx->key_certificate);
+                    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_PRIVATE_KEY_KEY, ifx->private_key);
                     zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_CERTIFICATE_KEY, ifx->cert_certificate);
                 } else 
                 {
