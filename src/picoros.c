@@ -250,6 +250,10 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
     _PR_LOG("Configuring Zenoh session...\r\n");
     _PR_LOG("Locator: %s\r\n", ifx->locator);
     zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_MODE_KEY, ifx->mode);
+    
+    char con_type[4] = {0};
+    memcpy(con_type, ifx->locator, 3);
+
     if (ifx->locator) {
         if (strcmp(ifx->mode, "client") == 0) {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_CONNECT_KEY, ifx->locator);
@@ -257,52 +261,52 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
         else {
             zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_LISTEN_KEY, ifx->locator);
         }
-    }
-
-    if (strstr(ifx->locator, "tls/") != NULL)
-    {
-        _PR_LOG("TLS enabled in locator\r\n");
-        if (ifx->key_certificate == NULL || ifx->ca_certificate == NULL || ifx->host_name == NULL)
+    
+        if (strstr(con_type, "tls") != NULL)
         {
-            _PR_LOG("ERROR: TLS enabled but missing certificates or hostname!\r\n");
-            return PICOROS_ERROR;
-        }
-
-        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_KEY, ifx->key_certificate);
-        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_KEY, ifx->ca_certificate);
-        if (ifx->enable_mTls)
-        {
-            _PR_LOG("mTLS enabled\n");
-            uint8_t _enTls = 1;
-            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &_enTls);   // Enable mTLS within Zenoh
-            if (ifx->cert_certificate == NULL)
+            _PR_LOG("TLS enabled in locator\r\n");
+            if (ifx->key_certificate == NULL || ifx->ca_certificate == NULL || ifx->host_name == NULL)
             {
-                _PR_LOG("ERROR: mTLS enabled but missing local certificate!\r\n");
-                return PICOROS_ERROR;
-            } else {
-                zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_CERTIFICATE_KEY, ifx->cert_certificate);
-            }
-        }
-        
-        if (ifx->verify_name_on_connect) {
-            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_VERIFY_NAME_ON_CONNECT_KEY, "true");
-        }
-        
-        if (strcmp(ifx->mode, "peer") == 0)
-        {
-            if (ifx->cert_certificate != NULL)
-            {
-                zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_PRIVATE_KEY_KEY, ifx->key_certificate);
-                zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_CERTIFICATE_KEY, ifx->cert_certificate);
-            } else 
-            {
-                _PR_LOG("ERROR: set to Peer mode but missing local certificate/private key!\r\n");
+                _PR_LOG("ERROR: TLS enabled but missing certificates or hostname!\r\n");
                 return PICOROS_ERROR;
             }
-        } 
-        
-        // Set the expected hostname for TLS verification. This should match the server's certificate.
-        zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_HOSTNAME_KEY, ifx->host_name);    
+
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_PRIVATE_KEY_KEY, ifx->key_certificate);
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ROOT_CA_CERTIFICATE_KEY, ifx->ca_certificate);
+            if (ifx->enable_mTls)
+            {
+                _PR_LOG("mTLS enabled\n");
+                uint8_t _enTls = 1;
+                zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_ENABLE_MTLS_KEY, &_enTls);   // Enable mTLS within Zenoh
+                if (ifx->cert_certificate == NULL)
+                {
+                    _PR_LOG("ERROR: mTLS enabled but missing local certificate!\r\n");
+                    return PICOROS_ERROR;
+                } else {
+                    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_CONNECT_CERTIFICATE_KEY, ifx->cert_certificate);
+                }
+            }
+            
+            if (ifx->verify_name_on_connect) {
+                zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_VERIFY_NAME_ON_CONNECT_KEY, "true");
+            }
+            
+            if (strcmp(ifx->mode, "client") != 0)
+            {
+                if (ifx->cert_certificate != NULL)
+                {
+                    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_PRIVATE_KEY_KEY, ifx->key_certificate);
+                    zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_LISTEN_CERTIFICATE_KEY, ifx->cert_certificate);
+                } else 
+                {
+                    _PR_LOG("ERROR: Local certificate/private key must be set when not in client mode!\r\n");
+                    return PICOROS_ERROR;
+                }
+            } 
+            
+            // Set the expected hostname for TLS verification. This should match the server's certificate.
+            zp_config_insert(z_config_loan_mut(&config), Z_CONFIG_TLS_HOSTNAME_KEY, ifx->host_name);    
+        }
     }
 
 
