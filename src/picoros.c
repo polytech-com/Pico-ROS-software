@@ -326,6 +326,13 @@ picoros_res_t picoros_interface_init(picoros_interface_t* ifx) {
         return PICOROS_ERROR;
     }
 
+#if Z_FEATURE_BATCHING == 1
+    if ((res = zp_batch_start(z_session_loan_mut(&s_wrapper))) != Z_OK) {
+        _PR_LOG("Unable to start batch start! Error:%d\n", res);
+        return PICOROS_ERROR;
+    }
+#endif
+
     return PICOROS_OK;
 }
 
