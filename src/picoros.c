@@ -358,6 +358,20 @@ void zenoh_shutdown() {
     z_session_drop(z_session_move(&s_wrapper));
 }
 
+picoros_res_t picoros_batch_flush()
+{
+#if Z_FEATURE_BATCHING == 1
+    z_result_t res = Z_OK;
+    if ((res = zp_batch_flush(z_session_loan_mut(&s_wrapper))) != Z_OK) {
+        _PR_LOG("Unable to flush batch! Error:%d\n", res);
+        return PICOROS_ERROR;
+    }
+    return PICOROS_OK;
+#else
+    return PICOROS_OK;
+#endif
+}
+
 picoros_res_t picoros_publisher_declare(picoros_node_t* node, picoros_publisher_t* pub) {
     z_view_keyexpr_t ke;
     z_result_t res = Z_OK;

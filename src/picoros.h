@@ -270,6 +270,9 @@ void picoros_interface_shutdown(void);
  */
 picoros_res_t picoros_node_init(picoros_node_t* node);
 
+
+picoros_res_t picoros_batch_flush();
+
 /**
  * @brief Declare a publisher for a node
  * @param node Pointer to node instance
